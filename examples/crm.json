@@ -1,0 +1,224 @@
+{
+  "name": "CRM",
+  "description": "Track companies, the people at them, and the deals you are working on.",
+  "version": 1,
+  "nav": [
+    {
+      "id": "contacts",
+      "label": "Contacts",
+      "tableId": "contacts"
+    },
+    {
+      "id": "companies",
+      "label": "Companies",
+      "tableId": "companies"
+    },
+    {
+      "id": "deals",
+      "label": "Deals",
+      "tableId": "deals"
+    }
+  ],
+  "tables": [
+    {
+      "id": "contacts",
+      "name": "Contacts",
+      "fields": [
+        {
+          "id": "first_name",
+          "label": "First Name",
+          "type": "text"
+        },
+        {
+          "id": "last_name",
+          "label": "Last Name",
+          "type": "text"
+        },
+        {
+          "id": "email",
+          "label": "Email",
+          "type": "text"
+        },
+        {
+          "id": "phone",
+          "label": "Phone",
+          "type": "text"
+        },
+        {
+          "id": "company_id",
+          "label": "Company",
+          "type": "lookup",
+          "lookupTable": "companies"
+        },
+        {
+          "id": "assignee",
+          "label": "Assigned To",
+          "type": "user"
+        },
+        {
+          "id": "status",
+          "label": "Status",
+          "type": "select",
+          "options": [
+            "Lead",
+            "Prospect",
+            "Active",
+            "Inactive"
+          ]
+        },
+        {
+          "id": "notes",
+          "label": "Notes",
+          "type": "longtext"
+        }
+      ]
+    },
+    {
+      "id": "companies",
+      "name": "Companies",
+      "fields": [
+        {
+          "id": "name",
+          "label": "Company Name",
+          "type": "text"
+        },
+        {
+          "id": "industry",
+          "label": "Industry",
+          "type": "text"
+        },
+        {
+          "id": "website",
+          "label": "Website",
+          "type": "text"
+        },
+        {
+          "id": "phone",
+          "label": "Phone",
+          "type": "text"
+        },
+        {
+          "id": "notes",
+          "label": "Notes",
+          "type": "longtext"
+        }
+      ]
+    },
+    {
+      "id": "deals",
+      "name": "Deals",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Deal Name",
+          "type": "text"
+        },
+        {
+          "id": "company_id",
+          "label": "Company",
+          "type": "lookup",
+          "lookupTable": "companies"
+        },
+        {
+          "id": "contact_id",
+          "label": "Contact",
+          "type": "lookup",
+          "lookupTable": "contacts"
+        },
+        {
+          "id": "value",
+          "label": "Value ($)",
+          "type": "number"
+        },
+        {
+          "id": "stage",
+          "label": "Stage",
+          "type": "select",
+          "options": [
+            "Prospect",
+            "Proposal",
+            "Negotiation",
+            "Closed Won",
+            "Closed Lost"
+          ]
+        },
+        {
+          "id": "assignee",
+          "label": "Assigned To",
+          "type": "user"
+        },
+        {
+          "id": "close_date",
+          "label": "Close Date",
+          "type": "date"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "id": "how_built",
+      "label": "How this app is built",
+      "content": "# How this app is built\n\n**Three tables**, linked by lookups:\n\n- **Companies** — one record per company.\n- **Contacts** — people. *Company* is a **lookup** to Companies, so each contact belongs to one company.\n- **Deals** — opportunities. *Company* and *Contact* are lookups, so a deal points at both.\n\n**Assigned To** is a **User** field: it holds a workspace member.\n\nEvery table also has four **built-in fields** you don't add yourself: *Created by*, *Created at*, *Updated by*, *Updated at* (greyed out in the field list).\n\n**Try it:** select a table and click **💬 + Add comments** to give every record a comment thread.\n\n---\n\n## About this page: a report\n\nThis page is a **report**: markdown text plus live SQL. Open it in the schema editor under *Reports* and switch to *Edit* to see how it's written.\n\n**Markdown** gives you headings (`#`, `##`, `###`), **bold** (`**bold**`), *italic* (`*italic*`), `code` (backticks), bullet lists (lines starting `- `) and dividers (`---`).\n\n**SQL widgets** are blocks that start with three backticks and the word `report`, and end with three backticks. Each one runs its query every time the report opens and shows the result as a table. Queries are read-only.\n\n- Use **ids**, not labels: table ids (`deals`) and field ids (`stage`). RacerX finds this app's own copy of the table for you.\n- **Created at** / **Updated at** are seconds since 1970. Show them as dates with `date(created_at, 'unixepoch', 'localtime')`.\n- A **lookup** field stores the id of the record it points to. To show a name, join to that table (examples below).\n- Under each table, **+ SQL** shows the widget's query.\n- In any table's list view, **Copy SQL** copies the current sort and filters as a ready-made SQL widget to paste into a report.\n\n### Pipeline by stage\n\nNumber and total value of deals at each stage:\n\n```report\nSELECT stage AS Stage, COUNT(*) AS Deals, SUM(value) AS \"Total value ($)\"\nFROM deals\nGROUP BY stage\nORDER BY \"Total value ($)\" DESC\n```\n\n### Deals with their company (a join)\n\n**Company** on Deals is a lookup, so it stores the company's id. Joining to Companies shows the name. `LEFT JOIN` keeps deals that have no company yet:\n\n```report\nSELECT d.title AS Deal, COALESCE(c.name, '(no company)') AS Company, d.stage AS Stage, d.value AS \"Value ($)\"\nFROM deals d\nLEFT JOIN companies c ON c.id = d.company_id\nORDER BY d.value DESC\n```\n",
+      "hidden": true
+    }
+  ],
+  "sampleData": {
+    "companies": [
+      {
+        "name": "Acme Corp",
+        "industry": "Manufacturing",
+        "website": "acmecorp.com",
+        "phone": "555-0100",
+        "notes": ""
+      },
+      {
+        "name": "GlobalTech",
+        "industry": "Technology",
+        "website": "globaltech.io",
+        "phone": "555-0200",
+        "notes": ""
+      }
+    ],
+    "contacts": [
+      {
+        "first_name": "Alice",
+        "last_name": "Johnson",
+        "email": "alice@acmecorp.com",
+        "phone": "555-0101",
+        "status": "Active",
+        "notes": "Primary contact at Acme"
+      },
+      {
+        "first_name": "Bob",
+        "last_name": "Smith",
+        "email": "bob@globaltech.io",
+        "phone": "555-0201",
+        "status": "Lead",
+        "notes": ""
+      },
+      {
+        "first_name": "Carol",
+        "last_name": "Davis",
+        "email": "carol@startupco.com",
+        "phone": "555-0301",
+        "status": "Prospect",
+        "notes": "Met at conference"
+      }
+    ],
+    "deals": [
+      {
+        "title": "Acme Annual License",
+        "stage": "Proposal",
+        "value": 12000,
+        "close_date": null
+      },
+      {
+        "title": "GlobalTech Pilot",
+        "stage": "Prospect",
+        "value": 5000,
+        "close_date": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,138 @@
+{
+  "name": "Issue Tracker",
+  "description": "Track issues from open to done, with a comment thread on every issue.",
+  "version": 1,
+  "nav": [
+    {
+      "id": "issues",
+      "label": "Issues",
+      "tableId": "issues"
+    },
+    {
+      "id": "issue_comments",
+      "label": "Issue Comments",
+      "tableId": "issue_comments",
+      "hidden": true
+    }
+  ],
+  "tables": [
+    {
+      "id": "issues",
+      "name": "Issues",
+      "fields": [
+        {
+          "id": "title",
+          "label": "Title",
+          "type": "text"
+        },
+        {
+          "id": "description",
+          "label": "Description",
+          "type": "longtext"
+        },
+        {
+          "id": "status",
+          "label": "Status",
+          "type": "select",
+          "options": [
+            "Open",
+            "In Progress",
+            "In Review",
+            "Done",
+            "Closed"
+          ]
+        },
+        {
+          "id": "priority",
+          "label": "Priority",
+          "type": "select",
+          "options": [
+            "Low",
+            "Medium",
+            "High",
+            "Critical"
+          ]
+        },
+        {
+          "id": "assignee",
+          "label": "Assignee",
+          "type": "user"
+        },
+        {
+          "id": "due_date",
+          "label": "Due Date",
+          "type": "date"
+        }
+      ]
+    },
+    {
+      "id": "issue_comments",
+      "name": "Issue Comments",
+      "display": "conversation",
+      "conversation": {
+        "bodyField": "comment",
+        "threadField": "issue"
+      },
+      "fields": [
+        {
+          "id": "issue",
+          "label": "Issue",
+          "type": "lookup",
+          "lookupTable": "issues"
+        },
+        {
+          "id": "comment",
+          "label": "Comment",
+          "type": "longtext"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "id": "how_built",
+      "label": "How this app is built",
+      "content": "# How this app is built\n\n**Issues** is an ordinary table: text fields, two **select** fields (Status, Priority), a **User** field (Assignee) and a date.\n\n**Comments** are a second table, **Issue Comments**, with two fields:\n\n- **Issue** — a **lookup** to Issues. This is what ties a comment to its issue.\n- **Comment** — the text.\n\nThree settings on Issue Comments (select it under *Tables*) make it a comment thread:\n\n1. **Display as: Conversation** — records show as chat bubbles.\n2. **Message field: Comment** — which field holds the text.\n3. **Thread on: Issue** — each issue shows only its own comments, at the bottom of the issue's record.\n\nWho wrote a comment and when come from the built-in **Created by** and **Created at** fields — no extra fields needed.\n\nIssue Comments is **hidden** from the menu: you reach comments from inside an issue.\n\n**Try it:** add comments to any table the same way — select it and click **💬 + Add comments**.\n\n---\n\n## About this page: a report\n\nThis page is a **report**: markdown text plus live SQL. Open it in the schema editor under *Reports* and switch to *Edit* to see how it's written.\n\n**Markdown** gives you headings (`#`, `##`, `###`), **bold** (`**bold**`), *italic* (`*italic*`), `code` (backticks), bullet lists (lines starting `- `) and dividers (`---`).\n\n**SQL widgets** are blocks that start with three backticks and the word `report`, and end with three backticks. Each one runs its query every time the report opens and shows the result as a table. Queries are read-only.\n\n- Use **ids**, not labels: table ids (`issues`) and field ids (`status`). RacerX finds this app's own copy of the table for you.\n- **Created at** / **Updated at** are seconds since 1970. Show them as dates with `date(created_at, 'unixepoch', 'localtime')`.\n- A **lookup** field stores the id of the record it points to. To show a name, join to that table (examples below).\n- Under each table, **+ SQL** shows the widget's query.\n- In any table's list view, **Copy SQL** copies the current sort and filters as a ready-made SQL widget to paste into a report.\n\n### Open issues by priority\n\nCounts issues that aren't Done or Closed, most urgent first:\n\n```report\nSELECT priority AS Priority, COUNT(*) AS \"Open issues\"\nFROM issues\nWHERE status NOT IN ('Done', 'Closed')\nGROUP BY priority\nORDER BY CASE priority WHEN 'Critical' THEN 1 WHEN 'High' THEN 2 WHEN 'Medium' THEN 3 ELSE 4 END\n```\n\n### Comments per issue (a join)\n\nJoins Issue Comments to Issues through the **Issue** lookup. `LEFT JOIN` keeps issues that have no comments yet:\n\n```report\nSELECT i.title AS Issue, i.status AS Status, COUNT(c.id) AS Comments\nFROM issues i\nLEFT JOIN issue_comments c ON c.issue = i.id\nGROUP BY i.id\nORDER BY Comments DESC, i.title\n```\n",
+      "hidden": true
+    }
+  ],
+  "sampleData": {
+    "issues": [
+      {
+        "title": "Login redirect broken",
+        "status": "Open",
+        "priority": "High",
+        "description": "Users redirected to the wrong page after sign in.",
+        "due_date": null
+      },
+      {
+        "title": "Add CSV export",
+        "status": "In Progress",
+        "priority": "Medium",
+        "description": "Export all records to CSV from the list view.",
+        "due_date": null
+      },
+      {
+        "title": "Update onboarding copy",
+        "status": "Open",
+        "priority": "Low",
+        "description": "Improve the first-run welcome text.",
+        "due_date": null
+      },
+      {
+        "title": "Intermittent timeouts",
+        "status": "Open",
+        "priority": "Critical",
+        "description": "Timeout errors under heavy load. Needs investigation.",
+        "due_date": null
+      },
+      {
+        "title": "Dark mode flicker",
+        "status": "Done",
+        "priority": "Low",
+        "description": "Brief white flash when switching to dark mode. Fixed in 1.4.",
+        "due_date": null
+      }
+    ]
+  }
+}

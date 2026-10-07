@@ -1,0 +1,41 @@
+{
+  "name": "Team Chat",
+  "description": "A single conversation for everyone in the workspace. For another conversation, add another Team Chat app.",
+  "version": 4,
+  "sync": {
+    "foregroundSeconds": 15
+  },
+  "nav": [
+    {
+      "id": "messages",
+      "label": "Messages",
+      "tableId": "messages"
+    }
+  ],
+  "tables": [
+    {
+      "id": "messages",
+      "name": "Messages",
+      "icon": "chat",
+      "display": "conversation",
+      "conversation": {
+        "bodyField": "message"
+      },
+      "fields": [
+        {
+          "id": "message",
+          "label": "Message",
+          "type": "longtext"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "id": "how_built",
+      "label": "How this app is built",
+      "content": "# How this app is built\n\nTeam Chat is an ordinary Forms app: **one table, one field, three settings**. There is no chat-specific code in RacerX.\n\n**The table — Messages**\n\n- **Message** (long text) — the only field you add.\n- Who sent a message and when come from two **built-in fields** every table has: **Created by** and **Created at** (greyed out in the field list).\n\n**The three settings** (select *Messages* under Tables; see *App settings* for the third)\n\n1. **Display as: Conversation** — records show as chat bubbles: yours on the right, everyone else's on the left with their name, oldest at the top.\n2. **Message field: Message** — which field holds the text. The box at the bottom creates a new record in this field.\n3. **Check for changes — while RacerX is in front: 15 seconds** (*App settings*) — so new messages from other devices arrive quickly.\n\n**Only one field.** A conversation table can't have other fields: the bubbles show just the message, so anything else would be invisible.\n\n**One conversation per app.** For a second conversation, add another Team Chat app.\n\n**Build your own**\n\n- *A log or journal:* any table with a text field can be shown as a conversation.\n- *Comments on records:* select any table and click **💬 + Add comments**. That adds a comments table shown as a conversation and **threaded** on a lookup, so every record gets its own comment thread. The *Issue Tracker* example has this built in.\n\n\n---\n\n## About this page: a report\n\nThis page is a **report**: markdown text plus live SQL. Open it in the schema editor under *Reports* and switch to *Edit* to see how it's written.\n\n**Markdown** gives you headings (`#`, `##`, `###`), **bold** (`**bold**`), *italic* (`*italic*`), `code` (backticks), bullet lists (lines starting `- `) and dividers (`---`).\n\n**SQL widgets** are blocks that start with three backticks and the word `report`, and end with three backticks. Each one runs its query every time the report opens and shows the result as a table. Queries are read-only.\n\n- Use **ids**, not labels: table ids (`messages`) and field ids (`message`). RacerX finds this app's own copy of the table for you.\n- **Created at** / **Updated at** are seconds since 1970. Show them as dates with `date(created_at, 'unixepoch', 'localtime')`.\n- A **lookup** field stores the id of the record it points to. To show a name, join to that table (examples below).\n- Under each table, **+ SQL** shows the widget's query.\n- In any table's list view, **Copy SQL** copies the current sort and filters as a ready-made SQL widget to paste into a report.\n\n### Messages per day\n\nWho sent a message and when are the built-in **Created by** and **Created at** fields, so you can report on them like any other field:\n\n```report\nSELECT date(created_at, 'unixepoch', 'localtime') AS Day, COUNT(*) AS Messages\nFROM messages\nGROUP BY Day\nORDER BY Day DESC\nLIMIT 14\n```\n",
+      "hidden": true
+    }
+  ]
+}

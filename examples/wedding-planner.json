@@ -1,0 +1,316 @@
+{
+  "name": "Wedding Planner",
+  "description": "Plan a wedding: the guest list and RSVPs, vendors, and a checklist of tasks.",
+  "version": 1,
+  "nav": [
+    {
+      "id": "guests",
+      "label": "Guests",
+      "tableId": "guests"
+    },
+    {
+      "id": "vendors",
+      "label": "Vendors",
+      "tableId": "vendors"
+    },
+    {
+      "id": "checklist",
+      "label": "Checklist",
+      "tableId": "checklist"
+    }
+  ],
+  "tables": [
+    {
+      "id": "guests",
+      "name": "Guests",
+      "fields": [
+        {
+          "id": "first_name",
+          "label": "First Name",
+          "type": "text"
+        },
+        {
+          "id": "last_name",
+          "label": "Last Name",
+          "type": "text"
+        },
+        {
+          "id": "email",
+          "label": "Email",
+          "type": "text"
+        },
+        {
+          "id": "phone",
+          "label": "Phone",
+          "type": "text"
+        },
+        {
+          "id": "rsvp",
+          "label": "RSVP",
+          "type": "select",
+          "options": [
+            "Pending",
+            "Attending",
+            "Declined",
+            "Maybe"
+          ]
+        },
+        {
+          "id": "meal_choice",
+          "label": "Meal Choice",
+          "type": "select",
+          "options": [
+            "Standard",
+            "Vegetarian",
+            "Vegan",
+            "Gluten-Free"
+          ]
+        },
+        {
+          "id": "table_num",
+          "label": "Table Number",
+          "type": "number"
+        },
+        {
+          "id": "notes",
+          "label": "Notes",
+          "type": "longtext"
+        }
+      ]
+    },
+    {
+      "id": "vendors",
+      "name": "Vendors",
+      "fields": [
+        {
+          "id": "name",
+          "label": "Vendor Name",
+          "type": "text"
+        },
+        {
+          "id": "category",
+          "label": "Category",
+          "type": "select",
+          "options": [
+            "Venue",
+            "Catering",
+            "Photography",
+            "Flowers",
+            "Music",
+            "Other"
+          ]
+        },
+        {
+          "id": "contact",
+          "label": "Contact Name",
+          "type": "text"
+        },
+        {
+          "id": "phone",
+          "label": "Phone",
+          "type": "text"
+        },
+        {
+          "id": "email",
+          "label": "Email",
+          "type": "text"
+        },
+        {
+          "id": "price",
+          "label": "Price ($)",
+          "type": "number"
+        },
+        {
+          "id": "status",
+          "label": "Status",
+          "type": "select",
+          "options": [
+            "Researching",
+            "Contacted",
+            "Booked",
+            "Paid",
+            "Cancelled"
+          ]
+        },
+        {
+          "id": "notes",
+          "label": "Notes",
+          "type": "longtext"
+        }
+      ]
+    },
+    {
+      "id": "checklist",
+      "name": "Checklist",
+      "fields": [
+        {
+          "id": "task",
+          "label": "Task",
+          "type": "text"
+        },
+        {
+          "id": "category",
+          "label": "Category",
+          "type": "select",
+          "options": [
+            "Venue",
+            "Invitations",
+            "Attire",
+            "Flowers",
+            "Catering",
+            "Honeymoon",
+            "Other"
+          ]
+        },
+        {
+          "id": "due_date",
+          "label": "Due Date",
+          "type": "date"
+        },
+        {
+          "id": "assignee",
+          "label": "Assigned To",
+          "type": "user"
+        },
+        {
+          "id": "done",
+          "label": "Done",
+          "type": "checkbox"
+        },
+        {
+          "id": "notes",
+          "label": "Notes",
+          "type": "longtext"
+        }
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "id": "how_built",
+      "label": "How this app is built",
+      "content": "# How this app is built\n\n**Three independent tables** — Guests, Vendors and Checklist — each with text, **select**, number and date fields.\n\n*Assigned To* on Checklist is a **User** field: it holds a workspace member.\n\nEvery table also has the **built-in fields** *Created by*, *Created at*, *Updated by* and *Updated at*.\n\n**Try it:** select Vendors and click **💬 + Add comments** to discuss each vendor.\n\n---\n\n## About this page: a report\n\nThis page is a **report**: markdown text plus live SQL. Open it in the schema editor under *Reports* and switch to *Edit* to see how it's written.\n\n**Markdown** gives you headings (`#`, `##`, `###`), **bold** (`**bold**`), *italic* (`*italic*`), `code` (backticks), bullet lists (lines starting `- `) and dividers (`---`).\n\n**SQL widgets** are blocks that start with three backticks and the word `report`, and end with three backticks. Each one runs its query every time the report opens and shows the result as a table. Queries are read-only.\n\n- Use **ids**, not labels: table ids (`guests`) and field ids (`rsvp`). RacerX finds this app's own copy of the table for you.\n- **Created at** / **Updated at** are seconds since 1970. Show them as dates with `date(created_at, 'unixepoch', 'localtime')`.\n- A **lookup** field stores the id of the record it points to. To show a name, join to that table (examples below).\n- Under each table, **+ SQL** shows the widget's query.\n- In any table's list view, **Copy SQL** copies the current sort and filters as a ready-made SQL widget to paste into a report.\n\n### RSVPs\n\n```report\nSELECT rsvp AS RSVP, COUNT(*) AS Guests\nFROM guests\nGROUP BY rsvp\nORDER BY Guests DESC\n```\n\n### Budget by vendor category\n\n```report\nSELECT category AS Category, COUNT(*) AS Vendors, SUM(price) AS \"Total ($)\"\nFROM vendors\nWHERE status <> 'Cancelled'\nGROUP BY category\nORDER BY \"Total ($)\" DESC\n```\n\n### Checklist progress\n\n**Done** is a checkbox, stored as 1 (ticked) or 0, so `SUM(done)` counts ticked tasks:\n\n```report\nSELECT SUM(done) AS Done, COUNT(*) - SUM(done) AS \"To do\", COUNT(*) AS Total\nFROM checklist\n```\n",
+      "hidden": true
+    }
+  ],
+  "sampleData": {
+    "guests": [
+      {
+        "first_name": "James",
+        "last_name": "Wilson",
+        "email": "james.w@email.com",
+        "phone": "",
+        "rsvp": "Attending",
+        "meal_choice": "Standard",
+        "table_num": 1,
+        "notes": ""
+      },
+      {
+        "first_name": "Sarah",
+        "last_name": "Brown",
+        "email": "sarah.b@email.com",
+        "phone": "",
+        "rsvp": "Attending",
+        "meal_choice": "Vegetarian",
+        "table_num": 1,
+        "notes": ""
+      },
+      {
+        "first_name": "Michael",
+        "last_name": "Taylor",
+        "email": "m.taylor@email.com",
+        "phone": "",
+        "rsvp": "Pending",
+        "meal_choice": "",
+        "table_num": null,
+        "notes": ""
+      },
+      {
+        "first_name": "Emily",
+        "last_name": "Anderson",
+        "email": "emily.a@email.com",
+        "phone": "",
+        "rsvp": "Declined",
+        "meal_choice": "",
+        "table_num": null,
+        "notes": ""
+      }
+    ],
+    "vendors": [
+      {
+        "name": "Green Valley Venue",
+        "category": "Venue",
+        "contact": "Sandra Reeves",
+        "phone": "555-2001",
+        "email": "info@greenvalley.com",
+        "price": 4500,
+        "status": "Booked",
+        "notes": ""
+      },
+      {
+        "name": "Bella Catering Co.",
+        "category": "Catering",
+        "contact": "Marco Rossi",
+        "phone": "555-2002",
+        "email": "bella@catering.com",
+        "price": 2800,
+        "status": "Booked",
+        "notes": ""
+      },
+      {
+        "name": "Focus Photography",
+        "category": "Photography",
+        "contact": "Lily Chen",
+        "phone": "555-2003",
+        "email": "lily@focusphoto.com",
+        "price": 2200,
+        "status": "Booked",
+        "notes": ""
+      }
+    ],
+    "checklist": [
+      {
+        "task": "Book the venue",
+        "category": "Venue",
+        "due_date": null,
+        "done": 1,
+        "notes": ""
+      },
+      {
+        "task": "Send invitations",
+        "category": "Invitations",
+        "due_date": null,
+        "done": 0,
+        "notes": ""
+      },
+      {
+        "task": "Book caterer",
+        "category": "Catering",
+        "due_date": null,
+        "done": 1,
+        "notes": ""
+      },
+      {
+        "task": "Choose attire",
+        "category": "Attire",
+        "due_date": null,
+        "done": 0,
+        "notes": ""
+      },
+      {
+        "task": "Book florist",
+        "category": "Flowers",
+        "due_date": null,
+        "done": 0,
+        "notes": ""
+      },
+      {
+        "task": "Plan honeymoon",
+        "category": "Honeymoon",
+        "due_date": null,
+        "done": 0,
+        "notes": ""
+      }
+    ]
+  }
+}
