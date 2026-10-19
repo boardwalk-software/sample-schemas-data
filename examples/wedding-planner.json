@@ -1,7 +1,7 @@
 {
   "name": "Wedding Planner",
   "description": "Plan a wedding: the guest list and RSVPs, vendors, and a checklist of tasks.",
-  "version": 1,
+  "version": 2,
   "nav": [
     {
       "id": "guests",
@@ -191,6 +191,11 @@
       "label": "How this app is built",
       "content": "# How this app is built\n\n**Three independent tables** — Guests, Vendors and Checklist — each with text, **select**, number and date fields.\n\n*Assigned To* on Checklist is a **User** field: it holds a workspace member.\n\nEvery table also has the **built-in fields** *Created by*, *Created at*, *Updated by* and *Updated at*.\n\n**Try it:** select Vendors and click **💬 + Add comments** to discuss each vendor.\n\n---\n\n## About this page: a report\n\nThis page is a **report**: markdown text plus live SQL. Open it in the schema editor under *Reports* and switch to *Edit* to see how it's written.\n\n**Markdown** gives you headings (`#`, `##`, `###`), **bold** (`**bold**`), *italic* (`*italic*`), `code` (backticks), bullet lists (lines starting `- `) and dividers (`---`).\n\n**SQL widgets** are blocks that start with three backticks and the word `report`, and end with three backticks. Each one runs its query every time the report opens and shows the result as a table. Queries are read-only.\n\n- Use **ids**, not labels: table ids (`guests`) and field ids (`rsvp`). RacerX finds this app's own copy of the table for you.\n- **Created at** / **Updated at** are seconds since 1970. Show them as dates with `date(created_at, 'unixepoch', 'localtime')`.\n- A **lookup** field stores the id of the record it points to. To show a name, join to that table (examples below).\n- Under each table, **+ SQL** shows the widget's query.\n- In any table's list view, **Copy SQL** copies the current sort and filters as a ready-made SQL widget to paste into a report.\n\n### RSVPs\n\n```report\nSELECT rsvp AS RSVP, COUNT(*) AS Guests\nFROM guests\nGROUP BY rsvp\nORDER BY Guests DESC\n```\n\n### Budget by vendor category\n\n```report\nSELECT category AS Category, COUNT(*) AS Vendors, SUM(price) AS \"Total ($)\"\nFROM vendors\nWHERE status <> 'Cancelled'\nGROUP BY category\nORDER BY \"Total ($)\" DESC\n```\n\n### Checklist progress\n\n**Done** is a checkbox, stored as 1 (ticked) or 0, so `SUM(done)` counts ticked tasks:\n\n```report\nSELECT SUM(done) AS Done, COUNT(*) - SUM(done) AS \"To do\", COUNT(*) AS Total\nFROM checklist\n```\n",
       "hidden": true
+    },
+    {
+      "id": "wedding_summary",
+      "label": "Wedding summary",
+      "content": "# Wedding summary\n\nThis is a sample report that shows in the app's Reports menu. Edit it in the Schema Editor, or untick **Show in app** to keep it for owners only. See *How this app is built* in the Schema Editor for how reports are written.\n\n### RSVPs\n\n```report\nSELECT rsvp AS RSVP, COUNT(*) AS Guests\nFROM guests\nGROUP BY rsvp\nORDER BY Guests DESC\n```\n\n### Meals for guests who are attending\n\n```report\nSELECT COALESCE(NULLIF(meal_choice, ''), '(not chosen)') AS Meal, COUNT(*) AS Guests\nFROM guests\nWHERE rsvp = 'Attending'\nGROUP BY Meal\nORDER BY Guests DESC\n```\n\n### Vendor costs by status\n\n```report\nSELECT status AS Status, COUNT(*) AS Vendors, SUM(price) AS \"Total ($)\"\nFROM vendors\nGROUP BY status\nORDER BY \"Total ($)\" DESC\n```\n\n### Checklist progress\n\n```report\nSELECT category AS Category, SUM(CASE WHEN done = 1 THEN 1 ELSE 0 END) AS Done, COUNT(*) AS Tasks\nFROM checklist\nGROUP BY category\nORDER BY category\n```\n"
     }
   ],
   "sampleData": {
