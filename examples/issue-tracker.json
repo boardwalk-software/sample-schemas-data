@@ -1,17 +1,12 @@
 {
  "name": "Issue Tracker",
- "description": "Track defects, suggestions and questions from report to fix, with votes and a comment thread on every issue.",
- "version": 3,
+ "description": "Track defects, suggestions and questions from report to fix, with a comment thread on every issue.",
+ "version": 4,
  "nav": [
   {
    "id": "issues",
    "label": "Issues",
    "tableId": "issues"
-  },
-  {
-   "id": "votes",
-   "label": "Votes",
-   "tableId": "votes"
   },
   {
    "id": "issue_comments",
@@ -81,21 +76,6 @@
      "type": "longtext"
     },
     {
-     "id": "steps",
-     "label": "Steps to reproduce",
-     "type": "longtext"
-    },
-    {
-     "id": "expected",
-     "label": "Expected",
-     "type": "longtext"
-    },
-    {
-     "id": "actual",
-     "label": "Actual",
-     "type": "longtext"
-    },
-    {
      "id": "severity",
      "label": "Severity",
      "type": "select",
@@ -138,19 +118,14 @@
      "type": "user"
     },
     {
-     "id": "fixed_in",
-     "label": "Fixed in build",
-     "type": "text"
-    },
-    {
-     "id": "duplicate_of",
-     "label": "Duplicate of (title)",
-     "type": "text"
-    },
-    {
      "id": "due_date",
      "label": "Due Date",
      "type": "date"
+    },
+    {
+     "id": "release_notes",
+     "label": "Release Notes",
+     "type": "longtext"
     }
    ],
    "layout": {
@@ -159,7 +134,6 @@
      {
       "id": "sec_report",
       "label": "Report",
-      "color": "#3B82F6",
       "rows": [
        {
         "fields": [
@@ -192,7 +166,13 @@
           "span": 1
          }
         ]
-       },
+       }
+      ]
+     },
+     {
+      "id": "sec_description",
+      "label": "Description",
+      "rows": [
        {
         "fields": [
          {
@@ -204,36 +184,8 @@
       ]
      },
      {
-      "id": "sec_defect",
-      "label": "Defect details",
-      "color": "#F59E0B",
-      "rows": [
-       {
-        "fields": [
-         {
-          "field": "steps",
-          "span": 2
-         }
-        ]
-       },
-       {
-        "fields": [
-         {
-          "field": "expected",
-          "span": 1
-         },
-         {
-          "field": "actual",
-          "span": 1
-         }
-        ]
-       }
-      ]
-     },
-     {
       "id": "sec_triage",
       "label": "Triage",
-      "color": "#8B5CF6",
       "rows": [
        {
         "fields": [
@@ -262,19 +214,21 @@
        {
         "fields": [
          {
-          "field": "fixed_in",
-          "span": 1
-         },
-         {
           "field": "due_date",
-          "span": 1
+          "span": 2
          }
         ]
-       },
+       }
+      ]
+     },
+     {
+      "id": "sec_release_notes",
+      "label": "Release Notes",
+      "rows": [
        {
         "fields": [
          {
-          "field": "duplicate_of",
+          "field": "release_notes",
           "span": 2
          }
         ]
@@ -292,73 +246,6 @@
      "severity",
      "priority",
      "assignee"
-    ]
-   }
-  },
-  {
-   "id": "votes",
-   "name": "Votes",
-   "fields": [
-    {
-     "id": "issue",
-     "label": "Issue",
-     "type": "lookup",
-     "lookupTable": "issues"
-    },
-    {
-     "id": "note",
-     "label": "Why it matters to me",
-     "type": "text"
-    }
-   ],
-   "layout": {
-    "columns": 2,
-    "sections": [
-     {
-      "id": "sec_vote",
-      "label": "Vote",
-      "color": "#10B981",
-      "rows": [
-       {
-        "fields": [
-         {
-          "field": "issue",
-          "span": 2
-         }
-        ]
-       },
-       {
-        "fields": [
-         {
-          "field": "issue.type",
-          "span": 1,
-          "readOnly": true
-         },
-         {
-          "field": "issue.status",
-          "span": 1,
-          "readOnly": true
-         }
-        ]
-       },
-       {
-        "fields": [
-         {
-          "field": "note",
-          "span": 2
-         }
-        ]
-       }
-      ]
-     }
-    ]
-   },
-   "list": {
-    "columns": [
-     "issue",
-     "issue.type",
-     "issue.status",
-     "note"
     ]
    }
   },
@@ -389,13 +276,13 @@
   {
    "id": "how_built",
    "label": "How this app is built",
-   "content": "# How this app is built\n\nA tracker for **defects**, **suggestions** and **questions**, robust enough to share with a group of testers.\n\n## Issues\n\n- **Type** (Defect / Suggestion / Question), **Area** and **Platforms** say what the report is about. Platforms is a **multi-select**: a defect can affect several.\n- **App version** says which build the reporter was using.\n- **Steps to reproduce**, **Expected** and **Actual** are the standard defect report. They're on their own *Defect details* section of the form.\n- **Severity** is how bad the problem is for the reporter; **Priority** is how soon you'll deal with it. They're separate on purpose.\n- **Status** runs New → Triaged → In Progress → Fixed in build → Verified → Closed, with **Won't Fix** and **Duplicate** for the rest. **Fixed in build** says which version to check; the reporter sets **Verified** once it works for them.\n- **Duplicate of** holds the title of the issue this one repeats. (It's text, not a lookup: a table can't look up into itself.)\n\n## Votes\n\nInstead of filing the same suggestion again, add a **Vote**: pick the issue, and optionally say why it matters. The vote's form shows the issue's Type and Status next to it: **related fields**, added on the *Records* tab with **+ Related field**. Related fields are always read-only. Who voted and when come from the built-in **Created by** and **Created at**.\n\n## Comments\n\n**Issue Comments** is a comment thread on every issue:\n\n- **Issue** — a **lookup** to Issues. This is what ties a comment to its issue.\n- **Comment** — the text.\n\nThree settings on Issue Comments (select it under *Tables*) make it a thread: **Display as: Conversation**, **Message field: Comment**, **Thread on: Issue**. It's **hidden** from the menu: you reach comments from inside an issue. Add comments to any table the same way with **💬 + Add comments**.\n\n## The form and the list\n\nOpen **Issues** in the schema editor:\n\n- **Records** tab: three sections (Report, Defect details, Triage). Drag fields between them, mark fields read-only, or add related fields.\n- **List** tab: which columns the list shows. Description and the defect details are hidden there to keep the list readable.\n\n---\n\n## About this page: a report\n\nThis page is a **report**: markdown text plus live SQL. Open it in the schema editor under *Reports* and switch to *Edit* to see how it's written.\n\n**Markdown** gives you headings (`#`, `##`, `###`), **bold** (`**bold**`), *italic* (`*italic*`), `code` (backticks), bullet lists (lines starting `- `) and dividers (`---`).\n\n**SQL widgets** are blocks that start with three backticks and the word `report`, and end with three backticks. Each one runs its query every time the report opens and shows the result as a table. Queries are read-only.\n\n- Use **ids**, not labels: table ids (`issues`) and field ids (`status`). RacerX finds this app's own copy of the table for you.\n- **Created at** / **Updated at** are seconds since 1970. Show them as dates with `date(created_at, 'unixepoch', 'localtime')`.\n- A **lookup** field stores the id of the record it points to. To show a name, join to that table (examples below).\n- Under each table, **+ SQL** shows the widget's query.\n- In any table's list view, **Copy SQL** copies the current sort and filters as a ready-made SQL widget to paste into a report.\n\n### Open defects by severity\n\nCounts defects that aren't finished, worst first. A blank status counts as New:\n\n```report\nSELECT COALESCE(severity, '(not set)') AS Severity, COUNT(*) AS \"Open defects\"\nFROM issues\nWHERE type = 'Defect' AND COALESCE(status, 'New') NOT IN ('Verified', 'Closed', 'Won''t Fix', 'Duplicate')\nGROUP BY severity\nORDER BY CASE severity WHEN 'Blocker' THEN 1 WHEN 'Major' THEN 2 WHEN 'Minor' THEN 3 WHEN 'Cosmetic' THEN 4 ELSE 5 END\n```\n\n### Comments per issue (a join)\n\nJoins Issue Comments to Issues through the **Issue** lookup. `LEFT JOIN` keeps issues that have no comments yet:\n\n```report\nSELECT i.title AS Issue, i.status AS Status, COUNT(c.id) AS Comments\nFROM issues i\nLEFT JOIN issue_comments c ON c.issue = i.id\nGROUP BY i.id\nORDER BY Comments DESC, i.title\n```\n",
+   "content": "# How this app is built\n\nA tracker for **defects**, **suggestions** and **questions**, robust enough to share with a group of testers.\n\n## Issues\n\n- **Type** (Defect / Suggestion / Question), **Area** and **Platforms** say what the report is about. Platforms is a **multi-select**: a defect can affect several.\n- **App version** says which build the reporter was using.\n- **Severity** is how bad the problem is for the reporter; **Priority** is how soon you'll deal with it. They're separate on purpose.\n- **Status** runs New → Triaged → In Progress → Fixed in build → Verified → Closed, with **Won't Fix** and **Duplicate** for the rest. The reporter sets **Verified** once the fix works for them.\n- **Release Notes** says what changed and in which version, in words the reporter can check against.\n\n## Comments\n\n**Issue Comments** is a comment thread on every issue:\n\n- **Issue** — a **lookup** to Issues. This is what ties a comment to its issue.\n- **Comment** — the text.\n\nThree settings on Issue Comments (select it under *Tables*) make it a thread: **Display as: Conversation**, **Message field: Comment**, **Thread on: Issue**. It's **hidden** from the menu: you reach comments from inside an issue. Add comments to any table the same way with **💬 + Add comments**.\n\n## The form and the list\n\nOpen **Issues** in the schema editor:\n\n- **Records** tab: four sections (Report, Description, Triage, Release Notes). Drag fields, rows or whole sections to rearrange them, mark fields read-only, or add related fields from a lookup.\n- **List** tab: which columns the list shows. Description and Release Notes are hidden there to keep the list readable.\n\n---\n\n## About this page: a report\n\nThis page is a **report**: markdown text plus live SQL. Open it in the schema editor under *Reports* and switch to *Edit* to see how it's written.\n\n**Markdown** gives you headings (`#`, `##`, `###`), **bold** (`**bold**`), *italic* (`*italic*`), `code` (backticks), bullet lists (lines starting `- `) and dividers (`---`).\n\n**SQL widgets** are blocks that start with three backticks and the word `report`, and end with three backticks. Each one runs its query every time the report opens and shows the result as a table. Queries are read-only.\n\n- Use **ids**, not labels: table ids (`issues`) and field ids (`status`). RacerX finds this app's own copy of the table for you.\n- **Created at** / **Updated at** are seconds since 1970. Show them as dates with `date(created_at, 'unixepoch', 'localtime')`.\n- A **lookup** field stores the id of the record it points to. To show a name, join to that table (examples below).\n- Under each table, **+ SQL** shows the widget's query.\n- In any table's list view, **Copy SQL** copies the current sort and filters as a ready-made SQL widget to paste into a report.\n\n### Open defects by severity\n\nCounts defects that aren't finished, worst first. A blank status counts as New:\n\n```report\nSELECT COALESCE(severity, '(not set)') AS Severity, COUNT(*) AS \"Open defects\"\nFROM issues\nWHERE type = 'Defect' AND COALESCE(status, 'New') NOT IN ('Verified', 'Closed', 'Won''t Fix', 'Duplicate')\nGROUP BY severity\nORDER BY CASE severity WHEN 'Blocker' THEN 1 WHEN 'Major' THEN 2 WHEN 'Minor' THEN 3 WHEN 'Cosmetic' THEN 4 ELSE 5 END\n```\n\n### Comments per issue (a join)\n\nJoins Issue Comments to Issues through the **Issue** lookup. `LEFT JOIN` keeps issues that have no comments yet:\n\n```report\nSELECT i.title AS Issue, i.status AS Status, COUNT(c.id) AS Comments\nFROM issues i\nLEFT JOIN issue_comments c ON c.issue = i.id\nGROUP BY i.id\nORDER BY Comments DESC, i.title\n```\n",
    "hidden": true
   },
   {
    "id": "issue_summary",
    "label": "Issue summary",
-   "content": "# Issue summary\n\nThis is a sample report that shows in the app's Reports menu. Edit it in the Schema Editor, or untick **Show in app** to keep it for owners only. See *How this app is built* in the Schema Editor for how reports are written.\n\n### Open issues by type and status\n\n```report\nSELECT type AS Type, COALESCE(status, 'New') AS Status, COUNT(*) AS Issues\nFROM issues\nWHERE COALESCE(status, 'New') NOT IN ('Closed', 'Won''t Fix', 'Duplicate')\nGROUP BY type, COALESCE(status, 'New')\nORDER BY type, CASE COALESCE(status, 'New') WHEN 'New' THEN 1 WHEN 'Triaged' THEN 2 WHEN 'In Progress' THEN 3 WHEN 'Fixed in build' THEN 4 ELSE 5 END\n```\n\n### Open defects by area\n\n```report\nSELECT COALESCE(area, '(not set)') AS Area,\n       SUM(severity = 'Blocker') AS Blocker, SUM(severity = 'Major') AS Major,\n       SUM(severity IN ('Minor', 'Cosmetic')) AS \"Minor or cosmetic\", COUNT(*) AS Total\nFROM issues\nWHERE type = 'Defect' AND COALESCE(status, 'New') NOT IN ('Verified', 'Closed', 'Won''t Fix', 'Duplicate')\nGROUP BY area\nORDER BY Blocker DESC, Major DESC, Total DESC\n```\n\n### Top-voted suggestions\n\n```report\nSELECT i.title AS Suggestion, COALESCE(i.status, 'New') AS Status, COUNT(v.id) AS Votes\nFROM issues i\nLEFT JOIN votes v ON v.issue = i.id\nWHERE i.type = 'Suggestion' AND COALESCE(i.status, 'New') NOT IN ('Closed', 'Won''t Fix', 'Duplicate')\nGROUP BY i.id\nORDER BY Votes DESC, i.title\n```\n\n### Fixed, waiting for the reporter to check\n\n```report\nSELECT title AS Issue, fixed_in AS \"Fixed in build\", COALESCE(area, '') AS Area\nFROM issues\nWHERE status = 'Fixed in build'\nORDER BY fixed_in, title\n```\n"
+   "content": "# Issue summary\n\nThis is a sample report that shows in the app's Reports menu. Edit it in the Schema Editor, or untick **Show in app** to keep it for owners only. See *How this app is built* in the Schema Editor for how reports are written.\n\n### Open issues by type and status\n\n```report\nSELECT type AS Type, COALESCE(status, 'New') AS Status, COUNT(*) AS Issues\nFROM issues\nWHERE COALESCE(status, 'New') NOT IN ('Closed', 'Won''t Fix', 'Duplicate')\nGROUP BY type, COALESCE(status, 'New')\nORDER BY type, CASE COALESCE(status, 'New') WHEN 'New' THEN 1 WHEN 'Triaged' THEN 2 WHEN 'In Progress' THEN 3 WHEN 'Fixed in build' THEN 4 ELSE 5 END\n```\n\n### Open defects by area\n\n```report\nSELECT COALESCE(area, '(not set)') AS Area,\n       SUM(severity = 'Blocker') AS Blocker, SUM(severity = 'Major') AS Major,\n       SUM(severity IN ('Minor', 'Cosmetic')) AS \"Minor or cosmetic\", COUNT(*) AS Total\nFROM issues\nWHERE type = 'Defect' AND COALESCE(status, 'New') NOT IN ('Verified', 'Closed', 'Won''t Fix', 'Duplicate')\nGROUP BY area\nORDER BY Blocker DESC, Major DESC, Total DESC\n```\n\n### Fixed, waiting for the reporter to check\n\n```report\nSELECT title AS Issue, COALESCE(area, '') AS Area, COALESCE(release_notes, '') AS \"Release Notes\"\nFROM issues\nWHERE status = 'Fixed in build'\nORDER BY title\n```\n"
   }
  ],
  "sampleData": {
@@ -407,9 +294,6 @@
     "platforms": "[\"Web\"]",
     "app_version": "2.3.0",
     "description": "Messages sent from the website's contact form never reach the sales inbox.",
-    "steps": "1. Open the Contact page.\n2. Fill in every field and press Send.\n3. Check the sales inbox.",
-    "expected": "The message arrives within a minute.",
-    "actual": "Nothing arrives, even after an hour. No error is shown.",
     "severity": "Blocker",
     "priority": "Critical",
     "status": "Triaged"
@@ -421,9 +305,6 @@
     "platforms": "[\"iOS\", \"Android\"]",
     "app_version": "2.3.0",
     "description": "Large images take several seconds to appear on mobile.",
-    "steps": "Open any product page on a phone using mobile data.",
-    "expected": "Photos appear in under a second.",
-    "actual": "Each photo takes 3–5 seconds.",
     "severity": "Major",
     "priority": "High",
     "status": "In Progress"
@@ -435,13 +316,10 @@
     "platforms": "[\"iOS\"]",
     "app_version": "2.2.1",
     "description": "On narrow phones the Checkout button sits below the fold behind the chat bubble.",
-    "steps": "Add an item to the cart on an iPhone SE, then open the cart.",
-    "expected": "Checkout is visible.",
-    "actual": "The chat bubble covers it.",
     "severity": "Major",
     "priority": "High",
     "status": "Fixed in build",
-    "fixed_in": "2.3.1"
+    "release_notes": "Fixed in 2.3.1: the chat bubble now sits above the Checkout button on narrow screens."
    },
    {
     "title": "Show store hours in the footer",
@@ -479,7 +357,7 @@
     "severity": "Minor",
     "priority": "Medium",
     "status": "Verified",
-    "fixed_in": "2.3.0"
+    "release_notes": "2.3.0: the privacy policy page shows the version approved by legal."
    }
   ]
  }
