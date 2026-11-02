@@ -183,6 +183,13 @@
         "website": "globaltech.io",
         "phone": "555-0200",
         "notes": ""
+      },
+      {
+        "name": "StartupCo",
+        "industry": "Software",
+        "website": "startupco.com",
+        "phone": "555-0300",
+        "notes": ""
       }
     ],
     "contacts": [
@@ -192,7 +199,10 @@
         "email": "alice@acmecorp.com",
         "phone": "555-0101",
         "status": "Active",
-        "notes": "Primary contact at Acme"
+        "notes": "Primary contact at Acme",
+        "company_id": {
+          "ref": "Acme Corp"
+        }
       },
       {
         "first_name": "Bob",
@@ -200,7 +210,10 @@
         "email": "bob@globaltech.io",
         "phone": "555-0201",
         "status": "Lead",
-        "notes": ""
+        "notes": "",
+        "company_id": {
+          "ref": "GlobalTech"
+        }
       },
       {
         "first_name": "Carol",
@@ -208,7 +221,10 @@
         "email": "carol@startupco.com",
         "phone": "555-0301",
         "status": "Prospect",
-        "notes": "Met at conference"
+        "notes": "Met at conference",
+        "company_id": {
+          "ref": "StartupCo"
+        }
       }
     ],
     "deals": [
@@ -216,13 +232,25 @@
         "title": "Acme Annual License",
         "stage": "Proposal",
         "value": 12000,
-        "close_date": null
+        "close_date": null,
+        "company_id": {
+          "ref": "Acme Corp"
+        },
+        "contact_id": {
+          "ref": "Alice Johnson"
+        }
       },
       {
         "title": "GlobalTech Pilot",
         "stage": "Prospect",
         "value": 5000,
-        "close_date": null
+        "close_date": null,
+        "company_id": {
+          "ref": "GlobalTech"
+        },
+        "contact_id": {
+          "ref": "Bob Smith"
+        }
       }
     ]
   }
